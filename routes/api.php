@@ -22,4 +22,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // Booking API Routes (protected by Sanctum)
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('bookings', BookingController::class);
+    Route::get('rooms', [BookingController::class, 'index'])->name('rooms.index');
 });

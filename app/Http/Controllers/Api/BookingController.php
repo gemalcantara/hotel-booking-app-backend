@@ -11,23 +11,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
-/**
- * @OA\Info(
- *     title="Hotel Booking API",
- *     version="1.0.0",
- *     description="API for managing hotel room bookings",
- *     @OA\Contact(
- *         email="admin@example.com"
- *     )
- * )
- * 
- * @OA\SecurityScheme(
- *     securityScheme="bearerAuth",
- *     type="http",
- *     scheme="bearer",
- *     bearerFormat="Sanctum API Token"
- * )
- */
 class BookingController extends Controller
 {
     /**
