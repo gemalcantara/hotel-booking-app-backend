@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\PromoCodeRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreBookingRequest extends FormRequest
@@ -11,7 +12,7 @@ class StoreBookingRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true; // Since we're using sanctum middleware in the controller
     }
 
     /**
@@ -22,7 +23,11 @@ class StoreBookingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'guest_name' => 'required|string|max:255',
+            'room_id' => 'required|exists:rooms,id',
+            'check_in_date' => 'required|date|after:today',
+            'check_out_date' => 'required|date|after:check_in_date',
+            'promo_code' => ['nullable', 'string', 'max:50', new PromoCodeRule],
         ];
     }
 }

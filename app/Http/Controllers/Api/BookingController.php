@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreBookingRequest;
+use App\Http\Requests\UpdateBookingRequest;
 use App\Models\Booking;
 use App\Models\Room;
 use App\Rules\PromoCodeRule;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 
 class BookingController extends Controller
 {
@@ -111,27 +112,11 @@ class BookingController extends Controller
      *     )
      * )
      * 
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests\StoreBookingRequest  $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(Request $request)
+    public function store(StoreBookingRequest $request)
     {
-        // Validate request
-        $validator = Validator::make($request->all(), [
-            'guest_name' => 'required|string|max:255',
-            'room_id' => 'required|exists:rooms,id',
-            'check_in_date' => 'required|date|after:today',
-            'check_out_date' => 'required|date|after:check_in_date',
-            'promo_code' => ['nullable', 'string', 'max:50', new PromoCodeRule],
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
         // Check if room is available
         $room = Room::find($request->room_id);
         if (!$room->is_available) {
@@ -290,11 +275,11 @@ class BookingController extends Controller
      *     )
      * )
      * 
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests\UpdateBookingRequest  $request
      * @param  int  $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, $id)
+    public function update(UpdateBookingRequest $request, $id)
     {
         $booking = Booking::find($id);
         
@@ -302,22 +287,6 @@ class BookingController extends Controller
             return response()->json([
                 'message' => 'Booking not found'
             ], 404);
-        }
-        
-        // Validate request
-        $validator = Validator::make($request->all(), [
-            'guest_name' => 'sometimes|required|string|max:255',
-            'check_in_date' => 'sometimes|required|date|after:today',
-            'check_out_date' => 'sometimes|required|date|after:check_in_date',
-            'status' => 'sometimes|required|in:pending,confirmed,cancelled',
-            'promo_code' => ['nullable', 'string', 'max:50', new PromoCodeRule],
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ], 422);
         }
         
         try {
