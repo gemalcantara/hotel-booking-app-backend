@@ -1,0 +1,453 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Hotel Booking API",
+        "description": "API for managing hotel room bookings",
+        "contact": {
+            "email": "admin@example.com"
+        },
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/bookings": {
+            "get": {
+                "tags": [
+                    "Bookings"
+                ],
+                "summary": "Get list of active bookings",
+                "description": "Returns paginated list of bookings with room details",
+                "operationId": "getBookingsList",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "bookings": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Bookings"
+                ],
+                "summary": "Create a new booking",
+                "description": "Creates a new booking with validation",
+                "operationId": "storeBooking",
+                "requestBody": {
+                    "description": "Booking data",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "guest_name",
+                                    "room_id",
+                                    "check_in_date",
+                                    "check_out_date"
+                                ],
+                                "properties": {
+                                    "guest_name": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "John Doe"
+                                    },
+                                    "room_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "check_in_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-05-01"
+                                    },
+                                    "check_out_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-05-03"
+                                    },
+                                    "promo_code": {
+                                        "type": "string",
+                                        "maxLength": 50,
+                                        "example": "SUMMER2025",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Booking created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Booking created"
+                                        },
+                                        "booking": {
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "guest_name": {
+                                                    "type": "string",
+                                                    "example": "John Doe"
+                                                },
+                                                "room_id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "check_in_date": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "example": "2025-05-01"
+                                                },
+                                                "check_out_date": {
+                                                    "type": "string",
+                                                    "format": "date",
+                                                    "example": "2025-05-03"
+                                                },
+                                                "status": {
+                                                    "type": "string",
+                                                    "example": "pending"
+                                                },
+                                                "promo_code": {
+                                                    "type": "string",
+                                                    "example": "SUMMER2025"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "409": {
+                        "description": "Conflict - Room not available or already booked for the dates"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/bookings/{id}": {
+            "get": {
+                "tags": [
+                    "Bookings"
+                ],
+                "summary": "Get booking information",
+                "description": "Returns booking data by ID",
+                "operationId": "getBookingById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Booking ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "booking": {
+                                            "$ref": "#/components/schemas/Booking"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Booking not found"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Bookings"
+                ],
+                "summary": "Update existing booking",
+                "description": "Updates a booking by ID",
+                "operationId": "updateBooking",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Booking ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Booking data to update",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "guest_name": {
+                                        "type": "string",
+                                        "maxLength": 255,
+                                        "example": "John Doe"
+                                    },
+                                    "check_in_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-05-01"
+                                    },
+                                    "check_out_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "2025-05-03"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "pending",
+                                            "confirmed",
+                                            "cancelled"
+                                        ],
+                                        "example": "confirmed"
+                                    },
+                                    "promo_code": {
+                                        "type": "string",
+                                        "maxLength": 50,
+                                        "example": "SUMMER2025",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Booking updated successfully"
+                    },
+                    "404": {
+                        "description": "Booking not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Bookings"
+                ],
+                "summary": "Delete booking",
+                "description": "Soft deletes a booking",
+                "operationId": "deleteBooking",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Booking ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Booking deleted successfully"
+                    },
+                    "404": {
+                        "description": "Booking not found"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Booking": {
+                "required": [
+                    "guest_name",
+                    "room_id",
+                    "check_in_date",
+                    "check_out_date",
+                    "status"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "guest_name": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "example": "John Doe"
+                    },
+                    "room_id": {
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "check_in_date": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2025-05-01"
+                    },
+                    "check_out_date": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2025-05-03"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "pending",
+                            "confirmed",
+                            "cancelled"
+                        ],
+                        "example": "pending"
+                    },
+                    "promo_code": {
+                        "type": "string",
+                        "maxLength": 50,
+                        "example": "SUMMER2025",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "deleted_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "Room": {
+                "required": [
+                    "number",
+                    "type",
+                    "is_available"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "number": {
+                        "type": "string",
+                        "example": "101"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "deluxe"
+                    },
+                    "is_available": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "deleted_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "Sanctum API Token",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Bookings",
+            "description": "Bookings"
+        }
+    ]
+}

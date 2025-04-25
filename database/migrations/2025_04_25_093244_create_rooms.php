@@ -9,10 +9,15 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
+    // Room : Fields: id , number (string, unique), type (string), is_available (boolean). 
     public function up(): void
     {
         Schema::create('rooms', function (Blueprint $table) {
             $table->id();
+            $table->string('number')->unique();
+            $table->string('type');
+            $table->boolean('is_available')->default(true);
+            $table->softDeletes();
             $table->timestamps();
         });
     }
