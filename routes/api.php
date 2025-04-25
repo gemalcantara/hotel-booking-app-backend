@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\BookingController;
+use App\Http\Controllers\Api\RoomController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,5 +23,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // Booking API Routes (protected by Sanctum)
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('bookings', BookingController::class);
-    Route::get('rooms', [BookingController::class, 'index'])->name('rooms.index');
+    Route::get('rooms', [RoomController::class, 'index'])->name('rooms.index');
 });
